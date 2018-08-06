@@ -33,11 +33,7 @@ def message_reminder(user_list):
 
 	for user in user_list:
 		# List of messages - chosen at random
-		possible_messages = ["Hey! This is your reminder to check on your lineup before games start today. Best of luck!",
-		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE. :arthur-fist:",
-		"Hey check your lineup; games start soon!",
-		"If you wanna be the champ :trophy: make sure to check your lineup before the coming games. Go Birds! :eagles:"
-		]
+		possible_messages = os.getenv("MESSAGES").split('|')
 
 		chosen_message = randint(0,len(possible_messages) - 1)
 
