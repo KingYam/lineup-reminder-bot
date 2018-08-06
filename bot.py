@@ -1,9 +1,9 @@
 import os
 from os.path import join, dirname
 from random import randint
-from slackclient import SlackClient
+from slackclient import SlackClient # need slackclient (install via pip)
 import json
-from dotenv import load_dotenv
+from dotenv import load_dotenv # need python-dotenv (install via pip)
 # from datetime import datetime
 
 # Get all users that are in the fantasy football channel for the message_reminder function
