@@ -69,6 +69,24 @@ def convert_season_active(env_var):
 	else:
 		return False
 
+def get_ineligible_players(teamID):
+	league_player_info = json.loads(requests.get('http://games.espn.com/ffl/api/v2/teams?leagueId=709724&seasonId=2018').text)
+	players = league_player_info["playerInfo"]["players"]
+
+	#EX todd gurley info http://games.espn.com/ffl/api/v2/playerInfo?leagueId=709724&seasonId=2018&playerId=17683
+
+	#investigate after draft: http://games.espn.com/ffl/api/v2/rosterInfo?leagueId=709724&seasonId=2018
+
+	byeCount = 0
+	injuredCount = 0
+	teamPlayers = []
+
+	for player in players:
+		if player["teamId"] == teamID:
+			teamPlayers.append(player)
+
+#health: 2 is Q,
+
 def send_messages():
 	# map slack user ID to team ID
 	user_team_map = {
@@ -112,6 +130,16 @@ def send_messages():
 				  	# "footer_icon":"https://emoji.slack-edge.com/T25PVRSNM/eagles/b9c49504860c346b.jpg",
 				  	"fields":[
 				  	{
+				  		"title":"Players on BYE",
+				  		"value":"0",
+				  		"short":True
+				  	},
+				  	{
+				  		"title":"Players Injured",
+				  		"value":"0",
+				  		"short":True
+				  	},
+				  	{
 				  		"title": "Record",
 				  		"value":str(team["record"]["overallWins"]) + "-" + str(team["record"]["overallLosses"]),
 				  		"short":True
@@ -121,7 +149,6 @@ def send_messages():
 				  		"value":team["waiverRank"],
 				  		"short":True
 				  	},
-				  	
 				  	],
 				  	"actions":[{
 				  		"type":"button",
