@@ -13,8 +13,10 @@ load_dotenv(dotenv_path)
 slack_token = os.getenv("SLACK_BOT_TOKEN")
 sc = SlackClient(slack_token)
 
-
+# Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
+	final_users_list = []
+
 	# Get all users:
 	full_users_list = json.loads(json.dumps(sc.api_call("users.list")))["members"]
 
@@ -23,15 +25,17 @@ def get_user_list():
 	members_in_ff_channel = []
 
 	for channel in channels_list_return:
-		if (channel["name"] == "fantasyfootball"):
+		if (channel["id"] == "C4NJ13XUY"):
 			for member_id in channel["members"]:
 				members_in_ff_channel.append(member_id)
 
 	for user in full_users_list:
 		if (not user["is_bot"] and not user["deleted"] and not user["id"] == "USLACKBOT" and user["id"] in members_in_ff_channel):
-			print user["id"]
-			print user["name"]
+			final_users_list.append(user["id"])
 
+	return final_users_list
+
+# Send message to users in the user list
 def message_reminder(user_list):
 
 	# List of messages - chosen at random
