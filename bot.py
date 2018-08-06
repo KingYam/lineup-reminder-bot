@@ -24,8 +24,9 @@ def get_user_list():
 	channels_list_return = json.loads(json.dumps(sc.api_call("channels.list",exclude_archived="true")))["channels"]
 	members_in_ff_channel = []
 
-	for channel in channels_list_return:
-		if (channel["id"] == "C4NJ13XUY"):
+	for channel in channels_list_return: 
+		# if (channel["id"] == "C4NJ13XUY"):
+		if (channel["id"] == "CC46T3ER5"):
 			for member_id in channel["members"]:
 				members_in_ff_channel.append(member_id)
 
@@ -38,20 +39,22 @@ def get_user_list():
 # Send message to users in the user list
 def message_reminder(user_list):
 
-	# List of messages - chosen at random
-	possible_messages = ["Hey! This is your reminder to check on your lineup before games start today. Best of luck!",
-	"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE.",
-	"something NOT useful"]
+	for user in user_list:
+		# List of messages - chosen at random
+		possible_messages = ["Hey! This is your reminder to check on your lineup before games start today. Best of luck!",
+		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE.",
+		"something NOT useful"]
 
-	chosen_message = randint(0,len(possible_messages) - 1)
+		chosen_message = randint(0,len(possible_messages) - 1)
 
-	# message users
-	sc.api_call(
-	  "chat.postMessage",
-	  channel="@wfoley",
-	  text=possible_messages[chosen_message],
-	  as_user="true"
-	)
+		# message users
+		sc.api_call(
+		  "chat.postMessage",
+		  channel=user,
+		  text=possible_messages[chosen_message],
+		  as_user="true"
+		)
+	
 user_list = get_user_list()
 # message_reminder(user_list)
 
