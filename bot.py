@@ -4,7 +4,6 @@ from random import randint
 from slackclient import SlackClient # need slackclient (install via pip)
 import json
 from dotenv import load_dotenv # need python-dotenv (install via pip)
-# from datetime import datetime
 
 # Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
@@ -18,7 +17,7 @@ def get_user_list():
 	members_in_ff_channel = []
 
 	for channel in channels_list_return: 
-		# if (channel["id"] == "C4NJ13XUY"):
+		# if (channel["id"] == "C4NJ13XUY"): #####TESTING####
 		if (channel["id"] == "CC46T3ER5"):
 			for member_id in channel["members"]:
 				members_in_ff_channel.append(member_id)
@@ -59,44 +58,15 @@ def convert_season_active(env_var):
 	else:
 		return False
 
-# Check if it's gameday
-# def is_gameday():
-# 	now = datetime.now()
-# 	if now.weekday() == 0:
-# 		# Mondays: 8:15
-# 		if now.hour == 19 and now.minute == 15:
-# 			return True
-# 		else:
-# 			return False
-# 	elif now.weekday() == 3:
-# 		# Thursdays: 8:20
-# 		if now.hour == 19 and now.minute == 20:
-# 			return True
-# 		else:
-# 			return False
-# 	elif now.weekday() == 6:
-# 		# Sundays: 1
-# 		if now.hour == 12 and now.minute == 0:
-# 			return True
-# 		else:
-# 			return False
-# 	else:
-# 		return False
-		
 
-
-# Get slack bot token from env file (for local testing)
+# Get slack bot token from env file 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-# Token from ENV (local testing - running 'python bot.py')
+# Token from ENV (
 slack_token = os.getenv("SLACK_BOT_TOKEN") 
 season_active = os.getenv("SEASON_ACTIVE") 
 
-
-# Heroku
-# slack_token = os.environ['SLACK_BOT_TOKEN'] 
-# season_active = os.environ['SEASON_ACTIVE'] 
 
 
 sc = SlackClient(slack_token)
