@@ -69,17 +69,6 @@ def convert_season_active(env_var):
 	else:
 		return False
 
-
-
-# Get slack bot token from env file 
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-slack_token = os.getenv("SLACK_BOT_TOKEN") 
-season_active = os.getenv("SEASON_ACTIVE") 
-
-sc = SlackClient(slack_token)
-
-
 def send_messages():
 	# map slack user ID to team ID
 	user_team_map = {
@@ -97,31 +86,78 @@ def send_messages():
 
 	league_obj = get_league_info()
 
+	league_teams_info = json.loads(requests.get('http://games.espn.com/ffl/api/v2/teams?leagueId=709724&seasonId=2018').text)
+
 	for user_id, team_id in user_team_map.iteritems():
 		# List of messages - chosen at random
 		possible_messages = os.getenv("MESSAGES").split('|')
 		chosen_message = randint(0,len(possible_messages) - 1)
 
-		for team in league_obj.teams:
-			if team.team_id == team_id:
-				print user_id
-				print team_id
-				print team.team_name
+		for team in league_teams_info["teams"]:
+			if team["teamId"] == team_id:
 				# message users
 				sc.api_call(
 				  "chat.postMessage",
 				  channel=user_id,
-				  text=possible_messages[chosen_message],
 				  as_user="true",
 				  attachments=[{
-				  	"pretext":possible_messages[chosen_message],
-				  	"title":team.team_name,
-				  	"title_link":"http://games.espn.com/ffl/clubhouse?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&teamId=" + str(team.team_id) + "&seasonId=" + str(os.getenv("SEASON")),
-				  	"text":"text goes here"
+				  	"fallback":possible_messages[chosen_message],
+				  	"author_name":team["owners"][0]["firstName"] + " " + team["owners"][0]["lastName"],
+				  	"title":team["teamLocation"] + " " + team["teamNickname"],
+				  	"title_link":"http://games.espn.com/ffl/clubhouse?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&teamId=" + str(team["teamId"]) + "&seasonId=" + str(os.getenv("SEASON")),
+				  	"text":possible_messages[chosen_message],
+				  	"thumb_url":team["logoUrl"],
+				  	"color":"good",
+				  	"footer":"_Go Birds_ -:king-yam:",
+				  	# "footer_icon":"https://emoji.slack-edge.com/T25PVRSNM/eagles/b9c49504860c346b.jpg",
+				  	"fields":[
+				  	{
+				  		"title": "Record",
+				  		"value":str(team["record"]["overallWins"]) + "-" + str(team["record"]["overallLosses"]),
+				  		"short":True
+				  	},
+				  	{
+				  		"title":"Waiver Rank",
+				  		"value":team["waiverRank"],
+				  		"short":True
+				  	},
+				  	
+				  	],
+				  	"actions":[{
+				  		"type":"button",
+				  		"text":"Check Lineup Now",
+				  		"url":"http://games.espn.com/ffl/clubhouse?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&teamId=" + str(team["teamId"]) + "&seasonId=" + str(os.getenv("SEASON"))
+				  	}]
 				  }]
-				)
+			  	)
 
+		# for team in league_obj.teams:
+			# if team.team_id == team_id:
+			# 	print team.team_name
+			# 	print team
+			# 	# message users
+			# 	sc.api_call(
+			# 	  "chat.postMessage",
+			# 	  channel=user_id,
+			# 	  as_user="true",
+			# 	  attachments=[{
+			# 	  	"fallback":possible_messages[chosen_message],
+			# 	  	"title":team.team_name,
+			# 	  	"title_link":"http://games.espn.com/ffl/clubhouse?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&teamId=" + str(team.team_id) + "&seasonId=" + str(os.getenv("SEASON")),
+			# 	  	"text":possible_messages[chosen_message]
+			# 	  }]
+			# 	)
 
+# espnapi = json.loads(requests.get('http://games.espn.com/ffl/api/v2/teams?leagueId=709724&seasonId=2018').text)
+# print espnapi["teams"][0]["divisionStanding"]
+
+# Get slack bot token from env file 
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+slack_token = os.getenv("SLACK_BOT_TOKEN") 
+season_active = os.getenv("SEASON_ACTIVE") 
+
+sc = SlackClient(slack_token)
 
 # Check that season is active
 if (convert_season_active(season_active)):
