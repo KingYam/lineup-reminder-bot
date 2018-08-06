@@ -70,20 +70,44 @@ def convert_season_active(env_var):
 		return False
 
 def get_ineligible_players(teamID):
-	league_player_info = json.loads(requests.get('http://games.espn.com/ffl/api/v2/teams?leagueId=709724&seasonId=2018').text)
-	players = league_player_info["playerInfo"]["players"]
-
-	#EX todd gurley info http://games.espn.com/ffl/api/v2/playerInfo?leagueId=709724&seasonId=2018&playerId=17683
-
-	#investigate after draft: http://games.espn.com/ffl/api/v2/rosterInfo?leagueId=709724&seasonId=2018
 
 	byeCount = 0
 	injuredCount = 0
-	teamPlayers = []
 
-	for player in players:
-		if player["teamId"] == teamID:
-			teamPlayers.append(player)
+	scoreboard_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/scoreboard?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&teamId=" + str(teamID)).text)
+	teams = scoreboard_info["scoreboard"]["matchups"][0]["teams"]
+
+	# Set current team
+	currentTeam = {}
+	for team in teams:
+		if team["teamId"] == teamID:
+			currentTeam = team
+
+
+	# Players on roster
+	# String for use in API call
+
+	if len(currentTeam["playerIDs"]) > 0:
+		currentTeamPlayersString = ",".join(map(str,currentTeam["playerIDs"]))
+		api_players_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/playerInfo?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&playerId=" + currentTeamPlayersString).text)
+		
+		# Used for finding BYEs
+		progames = api_players_info["playerInfo"]["progames"]
+		proTeamsPlaying = []
+		for progame in progames:
+			proTeamsPlaying.append(progames[progame]["awayProTeamId"])
+			proTeamsPlaying.append(progames[progame]["homeProTeamId"])
+
+		players = api_players_info["playerInfo"]["players"]
+		for player in players:
+			if player["player"]["healthStatus"] > 1:
+				injuredCount += 1
+			if player["player"]["proTeamId"] not in proTeamsPlaying:
+				byeCount += 1
+
+		return {"byeCount": byeCount, "injuredCount": injuredCount}
+	else:
+		return {"byeCount": -1, "injuredCount": -1}
 
 #health: 2 is Q,
 
@@ -104,12 +128,14 @@ def send_messages():
 
 	league_obj = get_league_info()
 
-	league_teams_info = json.loads(requests.get('http://games.espn.com/ffl/api/v2/teams?leagueId=709724&seasonId=2018').text)
+	league_teams_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/teams?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON"))).text)
 
 	for user_id, team_id in user_team_map.iteritems():
 		# List of messages - chosen at random
 		possible_messages = os.getenv("MESSAGES").split('|')
 		chosen_message = randint(0,len(possible_messages) - 1)
+
+		ineligible_players = get_ineligible_players(team_id)
 
 		for team in league_teams_info["teams"]:
 			if team["teamId"] == team_id:
@@ -126,17 +152,17 @@ def send_messages():
 				  	"text":possible_messages[chosen_message],
 				  	"thumb_url":team["logoUrl"],
 				  	"color":"good",
-				  	"footer":"_Go Birds_ -:king-yam:",
+				  	"footer":"_Go Birds_ -:king-yam:	Contact Will if you see any negative numbers.",
 				  	# "footer_icon":"https://emoji.slack-edge.com/T25PVRSNM/eagles/b9c49504860c346b.jpg",
 				  	"fields":[
 				  	{
 				  		"title":"Players on BYE",
-				  		"value":"0",
+				  		"value":ineligible_players["byeCount"],
 				  		"short":True
 				  	},
 				  	{
 				  		"title":"Players Injured",
-				  		"value":"0",
+				  		"value":ineligible_players["injuredCount"],
 				  		"short":True
 				  	},
 				  	{
@@ -152,7 +178,7 @@ def send_messages():
 				  	],
 				  	"actions":[{
 				  		"type":"button",
-				  		"text":"Check Lineup Now",
+				  		"text":"Review Roster",
 				  		"url":"http://games.espn.com/ffl/clubhouse?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&teamId=" + str(team["teamId"]) + "&seasonId=" + str(os.getenv("SEASON"))
 				  	}]
 				  }]
