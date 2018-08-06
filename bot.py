@@ -5,6 +5,7 @@ from slackclient import SlackClient # need slackclient (install via pip)
 import json
 from dotenv import load_dotenv # need python-dotenv (install via pip)
 import requests
+from espnff import League # need espnff (install via pip)
 
 
 # TODO use ESPN FFL API (maybe NFL api?) to grab meaningful info to send along with the reminder 
