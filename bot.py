@@ -4,7 +4,7 @@ from random import randint
 from slackclient import SlackClient
 import json
 from dotenv import load_dotenv
-from datetime import datetime
+# from datetime import datetime
 
 # Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
@@ -35,7 +35,9 @@ def message_reminder(user_list):
 	for user in user_list:
 		# List of messages - chosen at random
 		possible_messages = ["Hey! This is your reminder to check on your lineup before games start today. Best of luck!",
-		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE."
+		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE. :arthur-fist:"
+		"Hey check your lineup; games start soon!",
+		"If you wanna be the champ :trophy: make sure to check your lineup before the coming games. Go Birds! :eagles:"
 		]
 
 		chosen_message = randint(0,len(possible_messages) - 1)
@@ -48,13 +50,40 @@ def message_reminder(user_list):
 		  as_user="true"
 		)
 
+# Convert var to a boolean value
 def convert_season_active(env_var):
 	if env_var in ["True", "true", "1"]:
 		return True
-	else if env_var in ["False", "false", "0"]:
+	elif env_var in ["False", "false", "0"]:
 		return False
 	else:
 		return False
+
+# Check if it's gameday
+# def is_gameday():
+# 	now = datetime.now()
+# 	if now.weekday() == 0:
+# 		# Mondays: 8:15
+# 		if now.hour == 19 and now.minute == 15:
+# 			return True
+# 		else:
+# 			return False
+# 	elif now.weekday() == 3:
+# 		# Thursdays: 8:20
+# 		if now.hour == 19 and now.minute == 20:
+# 			return True
+# 		else:
+# 			return False
+# 	elif now.weekday() == 6:
+# 		# Sundays: 1
+# 		if now.hour == 12 and now.minute == 0:
+# 			return True
+# 		else:
+# 			return False
+# 	else:
+# 		return False
+		
+
 
 # Get slack bot token from env file (for local testing)
 dotenv_path = join(dirname(__file__), '.env')
@@ -71,7 +100,6 @@ season_active = os.getenv("SEASON_ACTIVE")
 
 
 sc = SlackClient(slack_token)
-
 
 if (convert_season_active(season_active)):
 	user_list = get_user_list()
