@@ -4,14 +4,7 @@ from random import randint
 from slackclient import SlackClient
 import json
 from dotenv import load_dotenv
-
-# Get slack bot token from env file
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-
-# Token from ENV
-slack_token = os.getenv("SLACK_BOT_TOKEN")
-sc = SlackClient(slack_token)
+from datetime import datetime
 
 # Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
@@ -42,8 +35,8 @@ def message_reminder(user_list):
 	for user in user_list:
 		# List of messages - chosen at random
 		possible_messages = ["Hey! This is your reminder to check on your lineup before games start today. Best of luck!",
-		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE.",
-		"something NOT useful"]
+		"*YO* - this is your reminder: check your roster! No one wants to see your opponent win because you didn't replace that TE you have on BYE."
+		]
 
 		chosen_message = randint(0,len(possible_messages) - 1)
 
@@ -54,9 +47,38 @@ def message_reminder(user_list):
 		  text=possible_messages[chosen_message],
 		  as_user="true"
 		)
-	
-user_list = get_user_list()
-message_reminder(user_list)
+
+def convert_season_active(env_var):
+	if env_var in ["True", "true", "1"]:
+		return True
+	else if env_var in ["False", "false", "0"]:
+		return False
+	else:
+		return False
+
+# Get slack bot token from env file (for local testing)
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+# Token from ENV (local testing - running 'python bot.py')
+slack_token = os.getenv("SLACK_BOT_TOKEN") 
+season_active = os.getenv("SEASON_ACTIVE") 
+
+
+# Heroku
+# slack_token = os.environ['SLACK_BOT_TOKEN'] 
+# season_active = os.environ['SEASON_ACTIVE'] 
+
+
+sc = SlackClient(slack_token)
+
+
+if (convert_season_active(season_active)):
+	user_list = get_user_list()
+	message_reminder(user_list)
+	print "Reminders sent"
+else:
+	print "Reminders not sent - season not active"
 
 
 
