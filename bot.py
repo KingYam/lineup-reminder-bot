@@ -1,18 +1,30 @@
 import os
+from os.path import join, dirname
 from random import randint
 from slackclient import SlackClient
 import json
+from dotenv import load_dotenv
+
+# Get slack bot token from env file
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 # Token from ENV
-slack_token = os.environ["SLACK_BOT_TOKEN"]
+slack_token = os.getenv("SLACK_BOT_TOKEN")
 sc = SlackClient(slack_token)
-
 
 # Get all users:
 full_users_list = json.loads(json.dumps(sc.api_call("users.list")))
 
-# Only message users in #fantasyfootball
+# Only want to message users in #fantasyfootball
 channels_list_return = json.loads(json.dumps(sc.api_call("channels.list",exclude_archived="true")))["channels"]
+members_in_ff_channel = []
+
+for channel in channels_list_return:
+	# print channel["name"]
+	if (channel["name"] == "fantasyfootball"):
+		for member_id in channel["members"]:
+			members_in_ff_channel.append(member_id)
 
 
 
