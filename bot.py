@@ -56,7 +56,7 @@ def message_reminder(user_list):
 		)
 	
 user_list = get_user_list()
-# message_reminder(user_list)
+message_reminder(user_list)
 
 
 
