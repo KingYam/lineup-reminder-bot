@@ -4,6 +4,14 @@ from random import randint
 from slackclient import SlackClient # need slackclient (install via pip)
 import json
 from dotenv import load_dotenv # need python-dotenv (install via pip)
+import requests
+
+
+# TODO use ESPN FFL API (maybe NFL api?) to grab meaningful info to send along with the reminder 
+# (players on BYE? teams on BYE? teams playing that day? current score vs opponent?)
+# match slack user IDs to team IDs to grab individual data
+
+
 
 # Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
