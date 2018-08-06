@@ -13,7 +13,13 @@ from espnff import League # need espnff (install via pip)
 # (players on BYE? teams on BYE? teams playing that day? current score vs opponent?)
 # match slack user IDs to team IDs to grab individual data
 
+# Get league object to work with
+def get_league_info():
+	league_id = os.getenv("LEAGUE_ID")
+	season = os.getenv("SEASON")
+	league = League(league_id, season)
 
+	return league
 
 # Get all users that are in the fantasy football channel for the message_reminder function
 def get_user_list():
@@ -41,16 +47,15 @@ def get_user_list():
 # Send message to users in the user list
 def message_reminder(user_list):
 
-	for user in user_list:
+	for user_id in user_list:
 		# List of messages - chosen at random
 		possible_messages = os.getenv("MESSAGES").split('|')
-
 		chosen_message = randint(0,len(possible_messages) - 1)
 
 		# message users
 		sc.api_call(
 		  "chat.postMessage",
-		  channel=user,
+		  channel=user_id,
 		  text=possible_messages[chosen_message],
 		  as_user="true"
 		)
@@ -72,8 +77,6 @@ load_dotenv(dotenv_path)
 # Token from ENV (
 slack_token = os.getenv("SLACK_BOT_TOKEN") 
 season_active = os.getenv("SEASON_ACTIVE") 
-
-
 
 sc = SlackClient(slack_token)
 
