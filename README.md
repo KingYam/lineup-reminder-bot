@@ -12,8 +12,7 @@ The reminder includes individual team data such as:
 * Link to team roster page
 
 ### Dependencies
-* [slackclient](https://github.com/slackapi/python-slackclient)
-* [python-dotenv](https://github.com/theskumar/python-dotenv)
+See [dependency graph](https://github.com/KingYam/lineup-reminder-bot/network/dependencies)
 
 Not featured in repo: .env file which includes the slack token for custom bot and other environmental variables.
 
