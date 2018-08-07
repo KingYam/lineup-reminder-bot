@@ -63,7 +63,7 @@ def send_messages():
 	# "U25QQ2FNJ":8, #anne
 	# "U25R9407P":7, #kevin
 	# "U2643RZBN":1, #jess
-	# "U270ZN6RG":3, #najee SUB FOR PAUL WHEN HE'S IN SLACK
+	# "UC3RV4A2Z":3, #paul
 	# "U27EHF5HQ":12, #bill
 	# "U27GY87U5":5, #dan
 	# "U285M8BRT":14, #khalif
