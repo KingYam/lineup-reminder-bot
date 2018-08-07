@@ -1,9 +1,9 @@
 import os
 from os.path import join, dirname
 from random import randint
-from slackclient import SlackClient # need slackclient (install via pip)
+from slackclient import SlackClient
 import json
-from dotenv import load_dotenv # need python-dotenv (install via pip)
+from dotenv import load_dotenv
 import requests
 
 # Convert var to a boolean value
@@ -57,18 +57,8 @@ def get_ineligible_players(team_ID):
 
 def send_messages():
 	# map slack user ID to team ID
-	user_team_map = {
-	"U25PVRSP3":2, #will
-	# "U25QNG8HJ":6, #doug
-	# "U25QQ2FNJ":8, #anne
-	# "U25R9407P":7, #kevin
-	# "U2643RZBN":1, #jess
-	# "UC3RV4A2Z":3, #paul
-	# "U27EHF5HQ":12, #bill
-	# "U27GY87U5":5, #dan
-	# "U285M8BRT":14, #khalif
-	# "U28626KMY":10, #gina
-	}
+	with open(os.getenv("USER_MAP_FILE_NAME")) as t:
+		user_team_map = json.load(t)
 
 	league_teams_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/teams?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON"))).text)
 

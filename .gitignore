@@ -1,3 +1,4 @@
 .env
 .DS_STORE
 env/*
+user_team_map.json
