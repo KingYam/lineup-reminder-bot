@@ -94,7 +94,7 @@ def send_messages():
 				  	"text":possible_messages[chosen_message],
 				  	"thumb_url":team["logoUrl"],
 				  	"color":"good",
-				  	"footer":"_Go Birds_ -:king-yam:	Contact Will if you see any negative numbers.",
+				  	"footer":"_Go Birds_ -:king-yam:	Contact Will if you see any issues.",
 				  	"fields":[
 				  	{
 				  		"title":"Players on BYE",
