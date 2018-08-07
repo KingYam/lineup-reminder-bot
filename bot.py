@@ -15,43 +15,43 @@ def convert_season_active(env_var):
 	else:
 		return False
 
-def get_ineligible_players(teamID):
+def get_ineligible_players(team_ID):
 
-	byeCount = 0
-	injuredCount = 0
+	bye_count = 0
+	injured_count = 0
 
-	scoreboard_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/scoreboard?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&teamId=" + str(teamID)).text)
+	scoreboard_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/scoreboard?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&teamId=" + str(team_ID)).text)
 	teams = scoreboard_info["scoreboard"]["matchups"][0]["teams"]
 
 	# Set current team
-	currentTeam = {}
+	current_team = {}
 	for team in teams:
-		if team["teamId"] == teamID:
-			currentTeam = team
+		if team["teamId"] == team_ID:
+			current_team = team
 
 
 	# Players on roster
 	# String for use in API call
 
-	if len(currentTeam["playerIDs"]) > 0:
-		currentTeamPlayersString = ",".join(map(str,currentTeam["playerIDs"]))
-		api_players_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/playerInfo?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&playerId=" + currentTeamPlayersString).text)
+	if len(current_team["playerIDs"]) > 0:
+		current_team_players_string = ",".join(map(str,current_team["playerIDs"]))
+		api_players_info = json.loads(requests.get("http://games.espn.com/ffl/api/v2/playerInfo?leagueId=" + str(os.getenv("LEAGUE_ID")) + "&seasonId=" + str(os.getenv("SEASON")) + "&playerId=" + current_team_players_string).text)
 		
 		# Used for finding BYEs
 		progames = api_players_info["playerInfo"]["progames"]
-		proTeamsPlaying = []
+		pro_teams_playing = []
 		for progame in progames:
-			proTeamsPlaying.append(progames[progame]["awayProTeamId"])
-			proTeamsPlaying.append(progames[progame]["homeProTeamId"])
+			pro_teams_playing.append(progames[progame]["awayProTeamId"])
+			pro_teams_playing.append(progames[progame]["homeProTeamId"])
 
 		players = api_players_info["playerInfo"]["players"]
 		for player in players:
 			if player["player"]["healthStatus"] > 1:
-				injuredCount += 1
-			if player["player"]["proTeamId"] not in proTeamsPlaying:
-				byeCount += 1
+				injured_count += 1
+			if player["player"]["proTeamId"] not in pro_teams_playing:
+				bye_count += 1
 
-		return {"byeCount": byeCount, "injuredCount": injuredCount}
+		return {"byeCount": bye_count, "injuredCount": injured_count}
 	else:
 		return {"byeCount": -1, "injuredCount": -1}
 
