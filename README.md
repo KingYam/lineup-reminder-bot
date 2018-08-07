@@ -12,7 +12,8 @@ The reminder includes individual team data such as:
 * Link to team roster page
 
 ### Dependencies
-See [dependency graph](https://github.com/KingYam/lineup-reminder-bot/network/dependencies)
+See [dependency graph](https://github.com/KingYam/lineup-reminder-bot/network/dependencies).
+
 
 Not featured in repo: .env file which includes the slack token for custom bot and other environmental variables.
 
