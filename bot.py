@@ -92,7 +92,7 @@ def send_messages():
 				  		"short":True
 				  	},
 				  	{
-				  		"title":"Players Injured",
+				  		"title":"Players Injured/Suspended",
 				  		"value":ineligible_players["injuredCount"],
 				  		"short":True
 				  	},
