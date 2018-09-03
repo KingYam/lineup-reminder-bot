@@ -11,6 +11,8 @@ The reminder includes individual team data such as:
 * Current team record
 * Link to team roster page
 
+[Screenshot](Screenshot.png)
+
 ### Dependencies
 See [dependency graph](https://github.com/KingYam/lineup-reminder-bot/network/dependencies).
 
